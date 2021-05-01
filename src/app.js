@@ -33,6 +33,13 @@ app.use(cors());
 app.use(helmet());
 app.use(express.json());
 
+function deleteItem(collection, id) {
+  const itemIndex = collection.findIndex(i => i.id == id);
+  if (itemIndex) {
+    collection.splice(itemIndex, 1);
+  }
+}
+
 const decks = [
   {
     "id": "cko50i9vh00007zmnh6b01hsl",
@@ -143,6 +150,23 @@ app.get("/cards/:cardId", (req, res) => {
   res.json({ data: card });
 });
 
+app.delete("/cards/:cardId", (req, res) => {
+  const { cardId } = req.params;
+  const cardIndex = cards.findIndex(c => c.id == cardId);
+
+  if(cardIndex === -1) {
+    const message = `Card id ${cardId} does not exist`;
+    return res
+      .status(404)
+      .json({ message });
+  }
+
+  cards.splice(cardIndex, 1);
+  res
+    .status(204)
+    .send();
+});
+
 app.get("/decks", (req, res) => {
   res
     .json({ data: decks });
@@ -196,7 +220,7 @@ app.get("/decks/:deckId", (req, res) => {
   res.json({ data: deck });
 });
 
-app.delete("/lists/:deckId", (req, res) => {
+app.delete("/decks/:deckId", (req, res) => {
   const { deckId } = req.params;
 
   const deckIndex = decks.findIndex(d => d.id == deckId);
@@ -209,7 +233,12 @@ app.delete("/lists/:deckId", (req, res) => {
       .json(message);
   }
 
-  decks.splice(deckIndex, 1);
+  // Delete deck
+  deleteItem(decks, deckId);
+  // Delete all cards in deck
+  cards
+    .filter(c => c.deckId === deckId)
+    .forEach(cardId => deleteItem(cards, cardId));
 
   logger.info(`Deck with id ${deckId} deleted.`);
   res
