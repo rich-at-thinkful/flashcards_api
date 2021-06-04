@@ -30,6 +30,6 @@ module.exports = {
     "no-eval": "error",            //disallows `eval()` usage
     "indent": ["error", 2],        //enforce 2 space indents (not tabs)        
     "semi": ["error", "always"],   //enforce semi-colon usage
-    "quotes": ["warn", "double"]
+    "quotes": ["warn", "double", { "allowTemplateLiterals": true } ]
   }
 };

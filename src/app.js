@@ -34,7 +34,7 @@ app.use(helmet());
 app.use(express.json());
 
 function deleteItem(collection, id) {
-  const itemIndex = collection.findIndex(i => i.id == id);
+  const itemIndex = collection.findIndex(i => i.id === id);
   if (itemIndex) {
     collection.splice(itemIndex, 1);
   }
@@ -92,12 +92,21 @@ app.get("/cards", (req, res) => {
 });
 
 app.post("/cards", (req, res) => {
-  const { data: { front, back, deckId } = {} } = req.body;
+  const { data } = req.body;
+  if (!data) {
+    const message = `Body must have 'data' key`;
+    logger.error(message);
+    return res
+      .status(400)
+      .json({ error: message });
+  }
+
+  const { front, back, deckId } = data;
 
   // Validate required fields are present
   const requiredFields = ["front","back","deckId"];
   for (const field of requiredFields) {
-    if (!field) {
+    if (!data[field]) {
       const message = `'${field}' is required`;
       logger.error(message);
       return res
@@ -136,7 +145,7 @@ app.post("/cards", (req, res) => {
 
 app.get("/cards/:cardId", (req, res) => {
   const { cardId } = req.params;
-  const card = cards.find(c => c.id == cardId);
+  const card = cards.find(c => c.id === cardId);
 
   // make sure we found a card
   if (!card) {
@@ -152,7 +161,7 @@ app.get("/cards/:cardId", (req, res) => {
 
 app.delete("/cards/:cardId", (req, res) => {
   const { cardId } = req.params;
-  const cardIndex = cards.findIndex(c => c.id == cardId);
+  const cardIndex = cards.findIndex(c => c.id === cardId);
 
   if(cardIndex === -1) {
     const message = `Card id ${cardId} does not exist`;
@@ -173,11 +182,20 @@ app.get("/decks", (req, res) => {
 });
 
 app.post("/decks", (req, res) => {
-  const { data: { name, description } = {} } = req.body;
+  const { data } = req.body;
+  if (!data) {
+    const message = `Body must have 'data' key`;
+    logger.error(message);
+    return res
+      .status(400)
+      .json({ error: message });
+  }
+
+  const { name, description } = data;
 
   const requiredFields = ["name", "description"];
   for (const field of requiredFields) {
-    if (!field) {
+    if (!data[field]) {
       const message = `'${field}' is required`;
       logger.error(message);
       return res
@@ -206,7 +224,7 @@ app.post("/decks", (req, res) => {
 
 app.get("/decks/:deckId", (req, res) => {
   const { deckId } = req.params;
-  const deck = decks.find(d => d.id == deckId);
+  const deck = decks.find(d => d.id === deckId);
 
   // make sure we found a list
   if (!deck) {
@@ -223,7 +241,7 @@ app.get("/decks/:deckId", (req, res) => {
 app.delete("/decks/:deckId", (req, res) => {
   const { deckId } = req.params;
 
-  const deckIndex = decks.findIndex(d => d.id == deckId);
+  const deckIndex = decks.findIndex(d => d.id === deckId);
 
   if (deckIndex === -1) {
     const message = `Deck with id ${deckId} not found.`; 
