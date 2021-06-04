@@ -210,7 +210,7 @@ app.get("/decks/:deckId", (req, res) => {
 
   // make sure we found a list
   if (!deck) {
-    const message = `Deck with id ${id} not found.`;
+    const message = `Deck with id ${deckId} not found.`;
     logger.error(message);
     return res
       .status(404)
@@ -226,7 +226,7 @@ app.delete("/decks/:deckId", (req, res) => {
   const deckIndex = decks.findIndex(d => d.id == deckId);
 
   if (deckIndex === -1) {
-    const message = `Deck with id ${id} not found.`; 
+    const message = `Deck with id ${deckId} not found.`; 
     logger.error(message);
     return res
       .status(404)
