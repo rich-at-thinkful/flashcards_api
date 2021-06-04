@@ -25,8 +25,8 @@ module.exports = {
   //ESLint rules: Severity Levels: off = 0 | warn = 1 | error = 2
   "rules": {
     "eqeqeq":"warn",              //prefer strict equality `===`
-    "no-console": "warn",          //allows but warn about console like `console.log()`
-    "no-unused-vars": ["warn", { "varsIgnorePattern": "^_" } ],
+    "no-console": ["warn", { "allow": ["error"] } ],          //allows but warn about console like `console.log()`
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" } ],
     "no-eval": "error",            //disallows `eval()` usage
     "indent": ["error", 2],        //enforce 2 space indents (not tabs)        
     "semi": ["error", "always"],   //enforce semi-colon usage
