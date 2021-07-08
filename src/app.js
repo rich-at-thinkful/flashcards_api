@@ -35,7 +35,7 @@ app.use(express.json());
 
 function deleteItem(collection, id) {
   const itemIndex = collection.findIndex(i => i.id === id);
-  if (itemIndex) {
+  if (itemIndex > -1) {
     collection.splice(itemIndex, 1);
   }
 }
