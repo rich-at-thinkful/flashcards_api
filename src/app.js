@@ -1,18 +1,10 @@
 require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
-const cors = require("cors");
-const helmet = require("helmet");
 const winston = require("winston");
 const cuid = require("cuid");
 
-const { NODE_ENV } = require("./config");
-
 const app = express();
-
-const morganOption = (NODE_ENV === "production")
-  ? "tiny"
-  : "common";
 
 const logger = winston.createLogger({
   level: "info",
@@ -22,15 +14,7 @@ const logger = winston.createLogger({
   ]
 });
 
-if (NODE_ENV !== "production") {
-  logger.add(new winston.transports.Console({
-    format: winston.format.simple()
-  }));
-}
-  
-app.use(morgan(morganOption));
-app.use(cors());
-app.use(helmet());
+app.use(morgan("common"));
 app.use(express.json());
 
 function deleteItem(collection, id) {
