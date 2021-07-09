@@ -5,28 +5,26 @@ const cuid = require("cuid");
 
 const app = express();
 
-// Create logger that will write message to "info.log"
+// Create a logger output to "info.log" file
+const fileLogger = new winston.transports.File({ filename: "info.log" });
+const consoleLogger = new winston.transports.Console({ format: winston.format.simple() });
+
 const logger = winston.createLogger({
   level: "info",
   format: winston.format.json(),
-  transports: [
-    new winston.transports.File({ filename: "info.log" })
-  ]
+  transports: [ fileLogger ],
 });
 
 // If running tests, remove file logger and output to console instead
 if (process.env.NODE_ENV === "test") {
-  const transport = logger.transports.find(t => t.filename === "info.log");
-  logger.remove(transport);
-  logger.add(new winston.transports.Console({
-    format: winston.format.simple(),
-  }));
+  logger.remove(fileLogger);
+  logger.add(consoleLogger);
 }
 
 // Import data store
 const { cards, decks } = require("./dataStore");
 
-// Utility function to delete items from collection by id
+// Utility function to delete items from any provided collection by id
 function deleteItem(collection, id) {
   const itemIndex = collection.findIndex(i => i.id === id);
   if (itemIndex > -1) {
