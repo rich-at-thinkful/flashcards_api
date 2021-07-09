@@ -5,6 +5,7 @@ const cuid = require("cuid");
 
 const app = express();
 
+// Create logger that will write message to "info.log"
 const logger = winston.createLogger({
   level: "info",
   format: winston.format.json(),
@@ -13,6 +14,7 @@ const logger = winston.createLogger({
   ]
 });
 
+// If running tests, remove file logger and output to console instead
 if (process.env.NODE_ENV === "test") {
   const transport = logger.transports.find(t => t.filename === "info.log");
   logger.remove(transport);
@@ -21,11 +23,10 @@ if (process.env.NODE_ENV === "test") {
   }));
 }
 
+// Import data store
 const { cards, decks } = require("./dataStore");
 
-app.use(morgan("common"));
-app.use(express.json());
-
+// Utility function to delete items from collection by id
 function deleteItem(collection, id) {
   const itemIndex = collection.findIndex(i => i.id === id);
   if (itemIndex > -1) {
@@ -33,6 +34,13 @@ function deleteItem(collection, id) {
   }
 }
 
+// -- PIPELINE STARTS HERE ---
+
+// Middleware
+app.use(morgan("common"));
+app.use(express.json());
+
+// Routes
 app.get("/cards", (req, res) => {
   res
     .json({ data: cards });
@@ -211,7 +219,7 @@ app.delete("/decks/:deckId", (req, res) => {
     .end();
 });
 
-
+// Error Handler
 app.use(function errorHandler(error, req, res, _next) {
   console.error(error);
   const status = error.status || 500;
