@@ -251,7 +251,8 @@ app.delete("/decks/:deckId", (req, res) => {
 
 app.use(function errorHandler(error, req, res, _next) {
   console.error(error);
-  const { message = "Internal Server Error", status = 500 } = error;
+  const status = error.status || 500;
+  const message = error.message || "Internal Server Error";
   
   res
     .status(status)
