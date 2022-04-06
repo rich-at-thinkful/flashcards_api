@@ -1,4 +1,3 @@
-const { expect } = require("chai");
 const supertest = require("supertest");
 
 const app = require("../src/app");
@@ -15,7 +14,7 @@ function resetDataStore() {
 }
 
 describe("cards routes", () => {
-  afterEach("reset data", resetDataStore);
+  afterEach(resetDataStore);
 
   describe("GET /cards", () => {
     it("returns list of cards", () => {
@@ -41,12 +40,12 @@ describe("cards routes", () => {
         .expect(201)
         .then(res => {
           const { data } = res.body;
-          expect(data).to.exist;
-          expect(data.id).to.exist;
-          expect(data.front).to.eql(validCard.front);
-          expect(data.back).to.eql(validCard.back);
-          expect(data.deckId).to.eql(validCard.deckId);
-          expect(cards.length).to.eql(oldCardsLength + 1);
+          expect(data).toBeDefined();
+          expect(data.id).toBeDefined();
+          expect(data.front).toEqual(validCard.front);
+          expect(data.back).toEqual(validCard.back);
+          expect(data.deckId).toEqual(validCard.deckId);
+          expect(cards.length).toEqual(oldCardsLength + 1);
         });
     });
 
@@ -115,7 +114,7 @@ describe("cards routes", () => {
         .delete(`/cards/${validCardId}`)
         .expect(204)
         .then(() => {
-          expect(cards.length).to.eql(oldCardsLength - 1);
+          expect(cards.length).toEqual(oldCardsLength - 1);
         });
     });
 
