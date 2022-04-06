@@ -8,12 +8,10 @@ module.exports = {
     "browser": true,
     "es6": true,
     "node": true,
-    "mocha": true,
-    "mongo": true
+    "jest": true,
   },
   "globals": {
     "supertest": true,
-    "expect": true
   },
   // our configuration extends the recommended base configuration
   "extends": "eslint:recommended",

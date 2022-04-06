@@ -19,6 +19,7 @@ const logger = winston.createLogger({
 if (process.env.NODE_ENV === "test") {
   logger.remove(fileLogger);
   logger.add(consoleLogger);
+  consoleLogger.level = "crit";
 }
 
 // Import data store
