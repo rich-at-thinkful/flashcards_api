@@ -40,19 +40,16 @@ app.use(morgan("common"));
 app.use(express.json());
 
 // Routes
-app.get("/cards", (req, res) => {
+app.get("/cards", (_req, res, _next) => {
   res
     .json({ data: cards });
 });
 
-app.post("/cards", (req, res) => {
+app.post("/cards", (req, res, next) => {
   const { data } = req.body;
   if (!data) {
     const message = `Body must have 'data' key`;
-    logger.error(message);
-    return res
-      .status(400)
-      .json({ error: message });
+    return next({ status: 400, message });
   }
 
   const { front, back, deckId } = data;
@@ -62,10 +59,7 @@ app.post("/cards", (req, res) => {
   for (const field of requiredFields) {
     if (!data[field]) {
       const message = `'${field}' is required`;
-      logger.error(message);
-      return res
-        .status(400)
-        .json({ error: message });
+      return next({ status: 400, message });
     }
   }
 
@@ -73,10 +67,7 @@ app.post("/cards", (req, res) => {
   const deck = decks.find(d => d.id === deckId);
   if (!deck) {
     const message = `Deck id ${deckId} does not exist.`;
-    logger.error(message);
-    return res
-      .status(400)
-      .json({ error: message });
+    return next({ status: 400, message });
   } 
 
   // Create an ID
@@ -97,31 +88,26 @@ app.post("/cards", (req, res) => {
     .json({ data: card });
 });
 
-app.get("/cards/:cardId", (req, res) => {
+app.get("/cards/:cardId", (req, res, next) => {
   const { cardId } = req.params;
   const card = cards.find(c => c.id === cardId);
 
   // make sure we found a card
   if (!card) {
     const message = `Card with id ${cardId} not found.`;
-    logger.error(message);
-    return res
-      .status(404)
-      .json({ error: message });
+    return next({ status: 404, message });
   }
 
   res.json({ data: card });
 });
 
-app.delete("/cards/:cardId", (req, res) => {
+app.delete("/cards/:cardId", (req, res, next) => {
   const { cardId } = req.params;
   const cardIndex = cards.findIndex(c => c.id === cardId);
 
   if(cardIndex === -1) {
     const message = `Card id ${cardId} does not exist`;
-    return res
-      .status(404)
-      .json({ message });
+    return next({ status: 404, message });
   }
 
   cards.splice(cardIndex, 1);
@@ -130,19 +116,16 @@ app.delete("/cards/:cardId", (req, res) => {
     .send();
 });
 
-app.get("/decks", (req, res) => {
+app.get("/decks", (req, res, _next) => {
   res
     .json({ data: decks });
 });
 
-app.post("/decks", (req, res) => {
+app.post("/decks", (req, res, next) => {
   const { data } = req.body;
   if (!data) {
     const message = `Body must have 'data' key`;
-    logger.error(message);
-    return res
-      .status(400)
-      .json({ error: message });
+    return next({ status: 400, message });
   }
 
   const { name, description } = data;
@@ -151,10 +134,7 @@ app.post("/decks", (req, res) => {
   for (const field of requiredFields) {
     if (!data[field]) {
       const message = `'${field}' is required`;
-      logger.error(message);
-      return res
-        .status(400)
-        .json({ error: message });
+      return next({ status: 400, message });
     }
   }
 
@@ -176,33 +156,27 @@ app.post("/decks", (req, res) => {
     .json({ data: deck });
 });
 
-app.get("/decks/:deckId", (req, res) => {
+app.get("/decks/:deckId", (req, res, next) => {
   const { deckId } = req.params;
   const deck = decks.find(d => d.id === deckId);
 
   // make sure we found a list
   if (!deck) {
     const message = `Deck with id ${deckId} not found.`;
-    logger.error(message);
-    return res
-      .status(404)
-      .json({ error: message });
+    return next({ status: 404, message });
   }
 
   res.json({ data: deck });
 });
 
-app.delete("/decks/:deckId", (req, res) => {
+app.delete("/decks/:deckId", (req, res, next) => {
   const { deckId } = req.params;
 
   const deckIndex = decks.findIndex(d => d.id === deckId);
 
   if (deckIndex === -1) {
     const message = `Deck with id ${deckId} not found.`; 
-    logger.error(message);
-    return res
-      .status(404)
-      .json(message);
+    return next({ status: 404, message });
   }
 
   // Delete deck
@@ -223,6 +197,7 @@ app.use(function errorHandler(error, req, res, _next) {
   console.error(error);
   const status = error.status || 500;
   const message = error.message || "Internal Server Error";
+  logger.error(message);
   
   res
     .status(status)
